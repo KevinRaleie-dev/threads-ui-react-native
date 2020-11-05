@@ -1,8 +1,10 @@
 import React from 'react';
 import { Text, View, StyleSheet, Alert, ScrollView } from 'react-native';
 import { Button, TextInput } from 'react-native-paper';
-import {Formik} from 'formik';
+import { Formik } from 'formik';
+import axios from 'axios';
 import Container from '../components/Container';
+import {validationSchema} from '../utils/validationSchema';
 
 export const BASE_URL = `http://localhost:3000`;
 
@@ -11,16 +13,11 @@ function Register({ navigation }) {
 
     const onSubmit = async (values) => {
         try {
-                await fetch(`${BASE_URL}/auth/register`, {
-                    method: 'POST',
-                    headers: {
-                        Accept: 'application/json',
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(values)
-                });
+                const response = await axios.post(`${BASE_URL}/auth/register`, values);
 
-                navigation.navigate('Login')
+                if (response.status === 200) {
+                    navigation.navigate('Login')
+                }
         } catch (error) {
             Alert.alert(error.message);
         }
@@ -33,8 +30,9 @@ function Register({ navigation }) {
                 <Formik 
                     initialValues={initialValues}
                     onSubmit={onSubmit}
+                    validationSchema={validationSchema}
                 >
-                    {({handleSubmit, handleChange, handleBlur, values}) => (
+                    {({handleSubmit, handleChange, handleBlur, values, errors, touched}) => (
 
                         <Container>
                             <Text style={styles.usernamelabel} >What should everyone call you?</Text>
@@ -46,7 +44,10 @@ function Register({ navigation }) {
                             value={values.username}
                             mode='outlined'
                             label='Username'
-                        />
+                            />
+                            
+                    <Text style={{color: 'red'}}>{errors.username}</Text>
+
                             <Text style={styles.accountlabel}>Account Information</Text>
                             <TextInput
                             onChangeText={handleChange('email')}
@@ -56,6 +57,8 @@ function Register({ navigation }) {
                             label='Email'
                             autoCompleteType='email'
                         />
+                            <Text style={{color: 'red'}}>{errors.email}</Text>
+
                             <TextInput
                             style={styles.inputs}
                             onChangeText={handleChange('password')}
@@ -65,6 +68,7 @@ function Register({ navigation }) {
                             label='Password'
                             secureTextEntry={true}
                         />
+                            <Text style={{color: 'red'}}>{errors.password}</Text>
                             <Text style={{fontSize: 12, marginTop: 5}}>By registering you agree to our terms of service and privacy policy.</Text>
                             <Button
                             mode='outlined'
