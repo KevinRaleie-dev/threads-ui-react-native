@@ -1,17 +1,21 @@
 import React from 'react'
-import { View, StyleSheet } from 'react-native'
+import { View, Dimensions } from 'react-native';
 
-export default function Container(props) {
-    const { children } = props;
+
+const Container = (props) => {
+    const {width, height} = Dimensions.get('screen');
+    let {children, bgColor } = props;
     return (
-        <View style={styles.container}>
+        <View style={{
+            flex: 1,
+            padding: 5,
+            backgroundColor: {bgColor},
+            width: width,
+            height: height
+        }}>
             {children}
         </View>
     )
 }
 
-const styles = StyleSheet.create({
-    container: {
-        padding: 10
-    }
-});
+export default Container;
