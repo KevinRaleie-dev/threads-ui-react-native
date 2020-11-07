@@ -1,40 +1,48 @@
 import React from 'react';
-import { Text, View, StyleSheet, Alert, ScrollView } from 'react-native';
+import { Text, View, StyleSheet, Alert, ScrollView, ActivityIndicator } from 'react-native';
 import { Button, TextInput } from 'react-native-paper';
 import { Formik } from 'formik';
 import axios from 'axios';
 import Container from '../components/Container';
-import {validationSchema} from '../utils/validationSchema';
+import {registerSchema} from '../utils/validationSchema';
+import { BASE_URL } from '../utils/index';
 
-export const BASE_URL = `http://localhost:3000`;
+let bg = '#0A0908';
 
 function Register({ navigation }) {
     const initialValues = {email: '', username: '', password: ''};
 
-    const onSubmit = async (values) => {
+    const onSubmit = async (values, actions) => {
         try {
                 const response = await axios.post(`${BASE_URL}/auth/register`, values);
 
                 if (response.status === 200) {
+
                     navigation.navigate('Login')
                 }
         } catch (error) {
-            Alert.alert(error.message);
+            // TODO: this is where im gonna display the server error
+            actions.setFieldError('general', error.message);
+        }
+        finally {
+            actions.setSubmitting(false);
         }
     }
 
     return (
-        <View style={styles.form}>
+        <Container 
+            bgColor={bg}
+        >
             <ScrollView>
                 <Text style={styles.text}>Sign Up</Text>
                 <Formik 
                     initialValues={initialValues}
                     onSubmit={onSubmit}
-                    validationSchema={validationSchema}
+                    validationSchema={registerSchema}
                 >
-                    {({handleSubmit, handleChange, handleBlur, values, errors, touched}) => (
+                    {({handleSubmit, handleChange, handleBlur, values, errors, touched, isSubmitting}) => (
 
-                        <Container>
+                        <React.Fragment>
                             <Text style={styles.usernamelabel} >What should everyone call you?</Text>
                             <Text style={{fontSize: 12}}>This will also be the name of your store.</Text>
                             <TextInput
@@ -45,9 +53,11 @@ function Register({ navigation }) {
                             mode='outlined'
                             label='Username'
                             />
-                            
-                    <Text style={{color: 'red'}}>{errors.username}</Text>
 
+                            {errors.username && touched.username ? (
+                                <Text style={{color: 'red'}}>{errors.username}</Text>
+                            ) : null}
+            
                             <Text style={styles.accountlabel}>Account Information</Text>
                             <TextInput
                             onChangeText={handleChange('email')}
@@ -57,7 +67,9 @@ function Register({ navigation }) {
                             label='Email'
                             autoCompleteType='email'
                         />
-                            <Text style={{color: 'red'}}>{errors.email}</Text>
+                            {errors.email && touched.email ? (
+                                <Text style={{color: 'red'}}>{errors.email}</Text>
+                            ) : null}
 
                             <TextInput
                             style={styles.inputs}
@@ -68,32 +80,38 @@ function Register({ navigation }) {
                             label='Password'
                             secureTextEntry={true}
                         />
-                            <Text style={{color: 'red'}}>{errors.password}</Text>
+                            {errors.password && touched.password ? (
+                                <Text style={{color: 'red'}}>{errors.password}</Text>
+                            ) : null}
+
                             <Text style={{fontSize: 12, marginTop: 5}}>By registering you agree to our terms of service and privacy policy.</Text>
-                            <Button
-                            mode='outlined'
-                            type='submit'
-                            style={styles.btnStyle}
-                            color='#fff'
-                            onPress={handleSubmit}
-                            >
-                                Create an account
-                            </Button>
-                        </Container> 
+                            
+                            {
+                                isSubmitting ? (
+                                    <ActivityIndicator />
+                                ) :
+                                <React.Fragment>
+                                    <Text style={{color: 'red'}}>{errors.general}</Text>
+                                    <Button
+                                    mode='outlined'
+                                    type='submit'
+                                    style={styles.btnStyle}
+                                    color='#fff'
+                                    onPress={handleSubmit}
+                                    >
+                                        Create an account
+                                    </Button>
+                                </React.Fragment>
+                            }
+                        </React.Fragment> 
                     )}
                 </Formik>
             </ScrollView>
-        </View>
-        
-        
+        </Container>
     )
 }
 
 const styles = StyleSheet.create({
-    form: {
-        flex: 1,
-        backgroundColor: '#EFF6EE'
-    },
     inputs: {
         marginTop: 5
     },
