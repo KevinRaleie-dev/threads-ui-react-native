@@ -39,7 +39,7 @@ const Login = () => {
             >
                 <ScrollView>
                     <View style={styles.text}>
-                        <Text style={{fontWeight: '700', fontSize: 25, marginTop: 40}}>Welcome back!</Text>
+                        <Text style={{fontWeight: '700', fontSize: 25, marginTop: 30}}>Welcome back!</Text>
                     </View>
                     <View style={styles.text}>
                        <Text>Log in with your email and start selling.</Text>
@@ -81,14 +81,14 @@ const Login = () => {
 
                             {isSubmitting ? (
                                 <ActivityIndicator/>
-                            ): <View style={styles.layout}>
+                            ): <React.Fragment>
                                     <Button
                                     mode='outlined'
                                     onPress={handleSubmit}
                                     style={styles.btnStyle}
                                     color='white'
                                     >Login</Button>
-                                </View>
+                                </React.Fragment>
                             }
                         </React.Fragment>
                     )}
@@ -109,18 +109,11 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         backgroundColor: '#0A0908',
         height: 45,
-        width: 300
     },
     input: {
         marginTop: 10
         },
     text: {
-        flex: 1,
-        justifyContent: 'center',
-        alignContent: 'center',
-        flexDirection: 'row',
-    },
-    layout: {
         flex: 1,
         justifyContent: 'center',
         alignContent: 'center',
