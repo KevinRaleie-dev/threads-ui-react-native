@@ -2,39 +2,20 @@ import React from 'react';
 import { Text, View, StyleSheet, Alert, ScrollView, ActivityIndicator } from 'react-native';
 import { Button, TextInput } from 'react-native-paper';
 import { Formik } from 'formik';
-import axios from 'axios';
-import Container from '../components/Container';
+import Container from '../../components/Container';
 import {registerSchema} from '../utils/validationSchema';
-import { BASE_URL } from '../utils/index';
-
-let bg = '#0A0908';
 
 function Register({ navigation }) {
     const initialValues = {email: '', username: '', password: ''};
 
     const onSubmit = async (values, actions) => {
-        try {
-                const response = await axios.post(`${BASE_URL}/auth/register`, values);
-
-                if (response.status === 200) {
-
-                    navigation.navigate('Login')
-                }
-        } catch (error) {
-            // TODO: this is where im gonna display the server error
-            actions.setFieldError('general', error.message);
-        }
-        finally {
-            actions.setSubmitting(false);
-        }
+     
     }
 
     return (
-        <Container 
-            bgColor={bg}
-        >
+        <Container>
             <ScrollView>
-                <Text style={styles.text}>Sign Up</Text>
+                <Text style={styles.text}>Sign up</Text>
                 <Formik 
                     initialValues={initialValues}
                     onSubmit={onSubmit}
@@ -44,8 +25,8 @@ function Register({ navigation }) {
 
                         <React.Fragment>
                             <Text style={styles.usernamelabel} >What should everyone call you?</Text>
-                            <Text style={{fontSize: 12}}>This will also be the name of your store.</Text>
                             <TextInput
+                            theme={{colors: {primary: 'black', underlineColor: 'transparent'}}}
                             style={styles.inputs}
                             onChangeText={handleChange('username')}
                             onBlur={handleBlur('username')}
@@ -53,6 +34,7 @@ function Register({ navigation }) {
                             mode='outlined'
                             label='Username'
                             />
+                            <Text style={{fontSize: 12}}>This will be the name of your store.</Text>
 
                             {errors.username && touched.username ? (
                                 <Text style={{color: 'red'}}>{errors.username}</Text>
@@ -60,6 +42,7 @@ function Register({ navigation }) {
             
                             <Text style={styles.accountlabel}>Account Information</Text>
                             <TextInput
+                            theme={{colors: {primary: 'black', underlineColor: 'transparent'}}}
                             onChangeText={handleChange('email')}
                             onBlur={handleBlur('email')}
                             value={values.email}
@@ -72,6 +55,7 @@ function Register({ navigation }) {
                             ) : null}
 
                             <TextInput
+                            theme={{colors: {primary: 'black', underlineColor: 'transparent'}}}
                             style={styles.inputs}
                             onChangeText={handleChange('password')}
                             onBlur={handleBlur('password')}
@@ -83,8 +67,6 @@ function Register({ navigation }) {
                             {errors.password && touched.password ? (
                                 <Text style={{color: 'red'}}>{errors.password}</Text>
                             ) : null}
-
-                            <Text style={{fontSize: 12, marginTop: 5}}>By registering you agree to our terms of service and privacy policy.</Text>
                             
                             {
                                 isSubmitting ? (
@@ -113,7 +95,8 @@ function Register({ navigation }) {
 
 const styles = StyleSheet.create({
     inputs: {
-        marginTop: 5
+        marginTop: 5,
+        borderColor: "black"
     },
     accountlabel: {
         marginTop: 20,
@@ -127,6 +110,7 @@ const styles = StyleSheet.create({
     },
     text: {
         fontSize: 35,
+        fontWeight: "bold",
         margin: 10
     },
     btn: {

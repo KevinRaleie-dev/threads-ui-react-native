@@ -1,23 +1,61 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
+import { ActivityIndicator } from "react-native";
 import { createStackNavigator } from '@react-navigation/stack';
-import Register from './screens/Register';
-import Login from './screens/Login';
-import Landing from './screens/Landing';
+import Register from './src/screens/Register';
+import Login from './src/screens/Login';
+import Landing from './src/screens/Landing';
+import { ApolloProvider } from '@apollo/client';
+import {client} from "./client";
+import { Home } from './src/screens/Home';
+import { getTokenFromStorage } from "./src/utils/token";
 
 const Stack = createStackNavigator();
 
 export default function App() {
+
+  const [isSignedIn, setIsSignedIn] = useState(true);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const checkSignedIn = async () => {
+      const token = await getTokenFromStorage("auth");
+      if (!token) {
+        setIsSignedIn(!isSignedIn);
+        setLoading(!loading);
+      }
+      setLoading(!loading);
+    }
+
+    checkSignedIn();
+  }, []);
+
+  if (loading) {
+    return <ActivityIndicator />
+  }
+
   return (
-    <NavigationContainer>
-      <Stack.Navigator>
-        <Stack.Screen name='Landing' component={Landing} options={{
-          header: () => null,
-          title: ''
-        }}/>
-        <Stack.Screen name='Register' component={Register}/>
-        <Stack.Screen name='Login' component={Login}/>
-      </Stack.Navigator>
-    </NavigationContainer>
+    <ApolloProvider client={client}>
+      <NavigationContainer>
+        <Stack.Navigator>
+          { isSignedIn ? (
+            <>
+              <Stack.Screen name='Home' component={Home} options={{ headerTitle: "Home"}}/>
+            </>
+          ) : (
+            <>
+              <Stack.Screen name='Landing' component={Landing} options={{
+                header: () => null,
+                title: '' 
+              }}/>
+              <Stack.Screen name='Register' component={Register} options={{
+                headerTitle: "Sign up"
+              }}/>
+              <Stack.Screen name='Login' component={Login} options={{ headerTitle: "Sign in"}}/>
+            </>
+          )}
+        </Stack.Navigator>
+      </NavigationContainer>
+    </ApolloProvider>
   );
 }

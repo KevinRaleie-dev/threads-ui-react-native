@@ -1,48 +1,54 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { View, Text, StyleSheet, ScrollView, ActivityIndicator, Alert } from 'react-native'
-import { Button, TextInput } from 'react-native-paper';
-import Container from '../components/Container';
+import { Button, TextInput, Snackbar } from 'react-native-paper';
+import Container from '../../components/Container';
 import { Formik } from 'formik';
 import { loginSchema } from '../utils/validationSchema';
-import { BASE_URL } from '../utils/index';
-import axios from 'axios';
+import { useMutation } from "@apollo/client";
+import { LOGIN_USER } from "../graphql/mutations/login";
+import { convertToObj } from "../utils/convert"
+import { setTokenInStorage } from "../utils/token";
 
-const Login = () => {
+const Login = ({ navigation }) => {
     const initialValues = {email: '', password: ''};
+    const [showSnackbar, setShowSnackbar] = useState(false);
 
-    const bg = '#0A0908';
+    const [login] = useMutation(LOGIN_USER);
 
-    const onSubmit = async (values, actions) => {
-        try {
+    const onSubmit = async ({ email, password }, actions) => {
+       try {
+           const response = await login({
+               variables: {
+                   email: email,
+                   password: password
+               },
+               // remember to run refetch query for the logged in user
+           });
 
-            const response = await axios.post(`${BASE_URL}/auth/login`, values);
-    
-            if (response.status !== 200) {
-                // navigate to the home screen
-                // and also capturing the token we get back and
-                // storing the user in context
-                const data = response.data;
+           if (response.data.login.errors) {
+               actions.setErrors(convertToObj(response.data.login.errors));
+           }
+           else if (response.data.login.user) {
+            //    set the access token in storage here
+            await setTokenInStorage("auth", response.data.login.accessToken);
+            // and navigate to the next page
+            navigation.navigate('Home');
 
-                Alert.alert(JSON.stringify(data, null, 2));
-            }    
-        } catch (error) {
-            actions.setFieldError('general', error.message);
-        }
-        finally {
-            actions.setSubmitting(false)
-        }
+           }
+       } catch (error) {
+           console.log(error)
+       }
     };
 
     return (
-            <Container
-                bgColor={bg}
-            >
+        <>
+            <Container>
                 <ScrollView>
                     <View style={styles.text}>
-                        <Text style={{fontWeight: '700', fontSize: 25, marginTop: 30}}>Welcome back!</Text>
+                        <Text style={{fontWeight: '700', fontSize: 25, marginTop: 30}}>Welcome back 👋</Text>
                     </View>
                     <View style={styles.text}>
-                       <Text>Log in with your email and start selling.</Text>
+                       <Text style={{marginTop: 10, color: "gray"}}>Find all your favourite items here, now.</Text>
                     </View>
                     <Formik
                     onSubmit={onSubmit}
@@ -52,12 +58,14 @@ const Login = () => {
                     {({handleSubmit, handleChange, handleBlur, values, errors, touched, isSubmitting}) => (
                         <React.Fragment>
                             <TextInput
+                            theme={{colors: {primary: 'black', underlineColor: 'transparent'}}}
                             style={styles.input}
                             onBlur={handleBlur('email')} 
                             value={values.email}
                             onChangeText={handleChange('email')}
                             mode='outlined'
                             label='Email'
+                            autoCapitalize='none'
                             />
                             {
                                 errors.email && touched.email ? (
@@ -65,6 +73,7 @@ const Login = () => {
                                 ) : null
                             }
                             <TextInput 
+                            theme={{colors: {primary: 'black', underlineColor: 'transparent'}}}
                             style={styles.input}
                             onBlur={handleBlur('password')}
                             value={values.password}
@@ -87,17 +96,28 @@ const Login = () => {
                                     onPress={handleSubmit}
                                     style={styles.btnStyle}
                                     color='white'
-                                    >Login</Button>
+                                    >Sign in</Button>
                                 </React.Fragment>
                             }
                         </React.Fragment>
                     )}
                     </Formik>
                     <View style={styles.text}>
-                        <Text style={{marginTop: 10, color: 'blue'}}>Forgot password?</Text>
+                        <Text onPress={() => setShowSnackbar(!showSnackbar)} style={{marginTop: 10, color: '#1e1e1e'}}>Forgot password?</Text>
                     </View>
                 </ScrollView>
             </Container>        
+            <Snackbar
+            onDismiss={() => setShowSnackbar(!showSnackbar)}
+            visible={showSnackbar}
+            action={{
+                label: "Close",
+                onPress: () => setShowSnackbar(!showSnackbar)
+            }}
+            >
+                Hey there im a snackbar 🥰
+            </Snackbar>
+        </>
     )
 }
 
