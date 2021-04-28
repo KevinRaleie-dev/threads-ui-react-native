@@ -1,6 +1,6 @@
-# Ecom Client 🛒
+# Threads React native app👟
 
-A small react native app for a hypothetical e-commerce store, you can find the backend for this app here: <a href='https://github.com/KevinRaleie-dev/fantastic-adventure.git'>e-com backend</a>
+Building a react native app for a my peer-to-peer marketplace platform, you can find the backend for this app here: <a href='https://github.com/KevinRaleie-dev/threads-api.git'>Threads API 📚</a>. Still under construction.
 
 ### Tech 👨🏽‍💻 so far...
  - Expo
@@ -8,3 +8,4 @@ A small react native app for a hypothetical e-commerce store, you can find the b
  - Formik
  - React Native Paper
  - React Native Navigation
+ - Apollo GraphQL
