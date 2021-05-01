@@ -19,12 +19,22 @@ const getTokenFromStorage = async (key) => {
     const token = await SecureStorage.getItemAsync(key);
 
     if (!token) {
-        console.log("🔐 no values stored with that key");
+        return;
     }
     return token;
 }
 
+/**
+ * 
+ * @param {string} key The key that was used to store the associated value.
+ * @returns A promise that will reject if the value couldn't be deleted.
+ */
+const deleteTokenFromStorage = async (key) => {
+    await SecureStorage.deleteItemAsync(key);
+}
+
 export {
     setTokenInStorage,
-    getTokenFromStorage
+    getTokenFromStorage,
+    deleteTokenFromStorage
 }

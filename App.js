@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
+import { AppLoading } from "expo"
 import { NavigationContainer } from '@react-navigation/native';
-import { ActivityIndicator } from "react-native";
 import { createStackNavigator } from '@react-navigation/stack';
 import Register from './src/screens/Register';
 import Login from './src/screens/Login';
@@ -31,7 +31,7 @@ export default function App() {
   }, []);
 
   if (loading) {
-    return <ActivityIndicator />
+    return <AppLoading />
   }
 
   return (
@@ -49,7 +49,7 @@ export default function App() {
                 title: '' 
               }}/>
               <Stack.Screen name='Register' component={Register} options={{
-                headerTitle: "Sign up"
+                headerTitle: "Create Account"
               }}/>
               <Stack.Screen name='Login' component={Login} options={{ headerTitle: "Sign in"}}/>
             </>
