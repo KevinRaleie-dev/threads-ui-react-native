@@ -7,8 +7,9 @@ import Login from './src/screens/Login';
 import Landing from './src/screens/Landing';
 import { ApolloProvider } from '@apollo/client';
 import {client} from "./client";
-import { Home } from './src/screens/Home';
 import { getTokenFromStorage } from "./src/utils/token";
+import {Root} from './src/screens/Root';
+
 
 const Stack = createStackNavigator();
 
@@ -26,7 +27,6 @@ export default function App() {
       }
       setLoading(!loading);
     }
-
     checkSignedIn();
   }, []);
 
@@ -37,23 +37,16 @@ export default function App() {
   return (
     <ApolloProvider client={client}>
       <NavigationContainer>
-        <Stack.Navigator>
-          { isSignedIn ? (
-            <>
-              <Stack.Screen name='Home' component={Home} options={{ headerTitle: "Home"}}/>
-            </>
-          ) : (
-            <>
-              <Stack.Screen name='Landing' component={Landing} options={{
-                header: () => null,
-                title: '' 
-              }}/>
-              <Stack.Screen name='Register' component={Register} options={{
-                headerTitle: "Create Account"
-              }}/>
-              <Stack.Screen name='Login' component={Login} options={{ headerTitle: "Sign in"}}/>
-            </>
-          )}
+        <Stack.Navigator>                  
+          <Stack.Screen name='Root' component={Root} options={{ headerTitle: "Home"}} />
+          <Stack.Screen name='Landing' component={Landing} options={{
+            header: () => null,
+            title: '' 
+          }}/>
+          <Stack.Screen name='Register' component={Register} options={{
+            headerTitle: "Create Account"
+          }}/>
+          <Stack.Screen name='Login' component={Login} options={{ headerTitle: "Sign in"}}/>
         </Stack.Navigator>
       </NavigationContainer>
     </ApolloProvider>

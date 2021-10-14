@@ -9,18 +9,20 @@ import { LOGIN_USER } from "../graphql/mutations/login";
 import { convertToObj } from "../utils/convert"
 import { setTokenInStorage } from "../utils/token";
 import { initialValues } from "../utils/constants";
-import { useFonts, Nunito_400Regular, Nunito_700Bold } from "@expo-google-fonts/nunito";
+import { useFonts, Nunito_400Regular, Nunito_600SemiBold, Nunito_700Bold } from '@expo-google-fonts/nunito';
+import { useNavigation } from '@react-navigation/native'
 
-const Login = ({ navigation }) => {
+const Login = () => {
     const [showSnackbar, setShowSnackbar] = useState(false);
+    const serverError = useRef('')
     const [fontsLoaded] = useFonts({
         Nunito_400Regular,
+        Nunito_600SemiBold,
         Nunito_700Bold
     });
 
-    const serverError = useRef('')
-
     const [login] = useMutation(LOGIN_USER);
+    const navigation = useNavigation();
 
     const onSubmit = async ({ email, password }, actions) => {
        try {
@@ -38,8 +40,9 @@ const Login = ({ navigation }) => {
             //    set the access token in storage here
             await setTokenInStorage("auth", response.data.login.accessToken);
             // and navigate to the next page
-            navigation.navigate('Home');
-
+            navigation.navigate('Root', {
+                screen: 'Home'
+            })
            }
        } catch (error) {
            serverError.current = error.message;
@@ -53,7 +56,7 @@ const Login = ({ navigation }) => {
 
     return (
         <>
-            <StatusBar barStyle='dark-content' />
+            <StatusBar barStyle={Platform.OS === 'android' ? 'light' : 'dark-content'} />
             <Container>
                 <ScrollView>
                     <View style={styles.header}>

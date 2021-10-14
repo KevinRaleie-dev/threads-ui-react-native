@@ -1,5 +1,5 @@
 import React, { useRef, useState } from 'react';
-import { Text, View, StyleSheet, ScrollView, ActivityIndicator, StatusBar } from 'react-native';
+import { Text, View, StyleSheet, KeyboardAvoidingView, ActivityIndicator, StatusBar, Platform } from 'react-native';
 import { Button, TextInput, Snackbar } from 'react-native-paper';
 import { Formik } from 'formik';
 import Container from '../../components/Container';
@@ -8,12 +8,20 @@ import { useMutation } from "@apollo/client"
 import { REGISTER_USER } from "../graphql/mutations/register"
 import { convertToObj } from "../utils/convert";
 import { initialValues } from "../utils/constants";
-import { useFonts, Nunito_400Regular, Nunito_600SemiBold, Nunito_700Bold } from '@expo-google-fonts/nunito';
+import { 
+    useFonts, 
+    Nunito_400Regular, 
+    Nunito_600SemiBold, 
+    Nunito_700Bold 
+} from '@expo-google-fonts/nunito';
+import { useNavigation } from '@react-navigation/native';
 
-function Register({ navigation }) {
+function Register() {
     const [register] = useMutation(REGISTER_USER);
     const [showSnack, setShowSnack] = useState(false);
     let serverError = useRef('');
+
+    const navigation = useNavigation();
 
     const [fontsLoaded] = useFonts({
         Nunito_400Regular,
@@ -21,11 +29,8 @@ function Register({ navigation }) {
         Nunito_700Bold
     });
 
-    if (!fontsLoaded) {
-        return <ActivityIndicator />
-    }
-
     const onSubmit = async ({ email, username, password }, actions) => {
+        console.log(email, username, password)
         try {
             const response = await register({
                 variables: {
@@ -39,7 +44,7 @@ function Register({ navigation }) {
                 actions.setErrors(convertToObj(response.data.register.errors));
             }
             else if (response.data.register.user) {
-                navigation.navigate("Login");
+                navigation.navigate('Login')
             }
         } catch (error) {
             // console.log(error.message);
@@ -49,16 +54,19 @@ function Register({ navigation }) {
         }
     }
 
+    if (!fontsLoaded) {
+        return <ActivityIndicator />
+    }
+
     return (
         <Container>
-            <StatusBar barStyle='dark-content' />
-            <ScrollView>
+            <StatusBar barStyle={Platform.OS === 'android' ? 'light' : 'dark-content'} />
+            <KeyboardAvoidingView
+            behavior={ Platform.OS === 'ios' ? 'padding' : 'height' }
+            style={styles.keyboardAvoidingView}
+            >
                 <View style={styles.header}>
                     <Text style={{fontFamily: 'Nunito_700Bold', fontSize: 32}}>Threads.</Text>
-                    <Text style={{ fontFamily: 'Nunito_600SemiBold', marginTop: 5, opacity: 0.8}}>
-                        From African attire to Streetwear. Indie designer brands. Vintage. Traditional. 
-                        Whatever your style. Find it here!
-                    </Text>
                 </View>
                 <Formik 
                     initialValues={initialValues}
@@ -67,8 +75,7 @@ function Register({ navigation }) {
                 >
                     {({handleSubmit, handleChange, handleBlur, values, errors, touched, isSubmitting}) => (
 
-                        <React.Fragment>
-                            {/* <Text style={styles.usernamelabel} >What should everyone call you?</Text> */}
+                        <React.Fragment>                
                             <TextInput
                             theme={{colors: {primary: 'black', underlineColor: 'transparent'}}}
                             style={styles.inputs}
@@ -139,7 +146,7 @@ function Register({ navigation }) {
                         </React.Fragment> 
                     )}
                 </Formik>
-            </ScrollView>
+            </KeyboardAvoidingView>
             <View style={styles.snackbar}>
                 <Snackbar
                 onDismiss={() => setShowSnack(!showSnack)}
@@ -148,6 +155,8 @@ function Register({ navigation }) {
                     label: "Close",
                     onPress: () => setShowSnack(!showSnack)
                 }}
+                style={styles.snackbarStyles}
+                duration={5000}
                 >
                     {serverError.current}
                 </Snackbar>
@@ -161,6 +170,9 @@ const styles = StyleSheet.create({
         marginTop: 10,
         backgroundColor: 'white',
         fontFamily: 'Nunito_400Regular'
+    },
+    keyboardAvoidingView: {
+        flex: 1,
     },
     accountlabel: {
         marginTop: 20,
@@ -182,6 +194,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center',
         backgroundColor: '#080705' ,
+        fontFamily: 'Nunito_400Regular',
         height: 50
     },
     error: {
@@ -196,6 +209,9 @@ const styles = StyleSheet.create({
     snackbar: {
         flex: 1,
         alignItems: 'center'
+    },
+    snackbarStyles: {
+        backgroundColor: '#FC2F00'
     }
 })
 

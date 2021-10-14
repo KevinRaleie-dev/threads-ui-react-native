@@ -2,16 +2,16 @@ import React from 'react'
 import { useNavigation } from '@react-navigation/native'
 import { View, Text, StyleSheet, TouchableWithoutFeedback, Image, StatusBar, Dimensions, ActivityIndicator } from 'react-native'
 import { randomImage } from '../utils/constants';
-import { Nunito_400Regular, useFonts, Nunito_700Bold, Nunito_600SemiBold } from "@expo-google-fonts/nunito"
+import { useFonts, Nunito_400Regular, Nunito_600SemiBold, Nunito_700Bold } from '@expo-google-fonts/nunito';
 
 const Landing = () => {
+    const navigation = useNavigation();
+
     const [fontsLoaded] = useFonts({
         Nunito_400Regular,
-        Nunito_700Bold,
-        Nunito_600SemiBold
+        Nunito_600SemiBold,
+        Nunito_700Bold
     });
-
-    const navigation = useNavigation();
 
     if(!fontsLoaded) {
         return <ActivityIndicator />
@@ -19,7 +19,7 @@ const Landing = () => {
 
     return (
         <View style={styles.container}>
-            <StatusBar />
+            <StatusBar barStyle="light-content" />
             <View style={styles.container}>
                 <Image
                 style={styles.image}
@@ -29,7 +29,7 @@ const Landing = () => {
                     <Text style={{ fontFamily: 'Nunito_700Bold', color: 'white', bottom: 200, fontSize: 32 }}>
                         Threads.
                     </Text>
-                    <Text style={{ fontFamily: 'Nunito_600SemiBold', top: 130, color: '#041F1E', fontSize: 17 }}>
+                    <Text style={{ fontFamily: 'Nunito_600SemiBold', top: 120, color: '#041F1E', fontSize: 17 }}>
                         Discover unique South African fashion
                     </Text>
                 </View>
